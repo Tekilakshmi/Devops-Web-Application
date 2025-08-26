@@ -1,0 +1,25 @@
+function addTask() {
+  let input = document.getElementById("taskInput");
+  let taskText = input.value.trim();
+
+  if (taskText === "") return; // Prevent empty tasks
+
+  let li = document.createElement("li");
+  li.innerHTML = `
+    <span onclick="toggleDone(this)">${taskText}</span>
+    <button onclick="removeTask(this)">❌</button>
+  `;
+
+  document.getElementById("taskList").appendChild(li);
+  input.value = ""; // Clear input
+}
+
+// Function to mark task as done
+function toggleDone(span) {
+  span.parentElement.classList.toggle("done");
+}
+
+// Function to remove a task
+function removeTask(button) {
+  button.parentElement.remove();
+}
