@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My To-Do List</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .todo-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 350px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-bottom: 15px;
+    }
+    input[type="text"] {
+      width: 65%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      background: #8b5cf6;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #7c3aed;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .filter {
+      margin: 10px 0;
+    }
+    .filter button {
+      background: none;
+      border: none;
+      margin-right: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #555;
+    }
+    .filter button:hover {
+      color: #000;
+    }
+    #clearDone {
+      background: #ef4444;
+      margin-top: 10px;
+    }
+    #clearDone:hover {
+      background: #dc2626;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="todo-container">
+    <h2>My To-Do List ✅</h2>
+
+    <label>New task</label>
+    <input type="text" id="taskInput" placeholder="What do you need to do?">
+    <button id="addBtn">Add</button>
+
+    <p id="counter">0 items</p>
+
+    <div class="filter">
+      <button data-filter="all">All</button>
+      <button data-filter="active">Active</button>
+      <button data-filter="done">Done</button>
+    </div>
+
+    <ul id="taskList"></ul>
+
+    <button id="clearDone">Clear done</button>
+  </div>
+
+  <script>
+    const taskInput = document.getElementById("taskInput");
+    const addBtn = document.getElementById("addBtn");
+    const taskList = document.getElementById("taskList");
+    const filterButtons = document.querySelectorAll(".filter button");
+    const clearDoneBtn = document.getElementById("clearDone");
+    const counter = document.getElementById("counter");
+
+    let tasks = [];
+
+    // Add new task
+    addBtn.addEventListener("click", () => {
+      const text = taskInput.value.trim();
+      if (text === "") return;
+
+      const task = { id: Date.now(), text, done: false };
+      tasks.push(task);
+      taskInput.value = "";
+      renderTasks();
+    });
+
+    // Toggle task done/undone
+    function toggleTask(id) {
+      tasks = tasks.map(t => t.id === id ? { ...t, done: !t.done } : t);
+      renderTasks();
+    }
+
+    // Delete done tasks
+    clearDoneBtn.addEventListener("click", () => {
+      tasks = tasks.filter(t => !t.done);
+      renderTasks();
+    });
+
+    // Render tasks
+    function renderTasks(filter = "all") {
+      taskList.innerHTML = "";
+
+      let filtered = tasks;
+      if (filter === "active") filtered = tasks.filter(t => !t.done);
+      if (filter === "done") filtered = tasks.filter(t => t.done);
+
+      filtered.forEach(task => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <input type="checkbox" ${task.done ? "checked" : ""} 
+            onchange="toggleTask(${task.id})">
+          <span style="text-decoration:${task.done ? 'line-through' : 'none'}">
+            ${task.text}
+          </span>
+        `;
+        taskList.appendChild(li);
+      });
+
+      counter.textContent = tasks.length + " items";
+    }
+
+    // Filter buttons
+    filterButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        renderTasks(btn.dataset.filter);
+      });
+    });
+
+    // First render
+    renderTasks();
+  </script>
+
+</body>
+</html>
